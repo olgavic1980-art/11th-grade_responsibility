@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Module 3: Have you been the victim of a crime?</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    font-size: 22px;
+    color: #2c3e50;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+  h2 {
+    text-align: center;
+    color: #555;
+    font-size: 22px;
+    font-weight: normal;
+    margin-bottom: 30px;
+  }
+  
+  .menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+  }
+  .tile {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 45px 25px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+  }
+  .tile .num {
+    font-size: 72px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+  }
+  .tile:nth-child(2) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+  .tile:nth-child(3) { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+  .tile:nth-child(4) { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+  .tile:nth-child(5) { background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); color: #333; }
+  .tile:nth-child(6) { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
+  .tile:nth-child(7) { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: #333; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background 0.2s;
+    font-weight: bold;
+  }
+  .btn:hover { background: #2980b9; }
+  .btn.back { background: #95a5a6; }
+  .btn.back:hover { background: #7f8c8d; }
+  .btn.next { background: #27ae60; }
+  .btn.next:hover { background: #229954; }
+  .btn.check { background: #e67e22; }
+  .btn.check:hover { background: #d35400; }
+
+  .controls {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  /* Task 1 */
+  .tf-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .tf-table th, .tf-table td {
+    border: 2px solid #bdc3c7;
+    padding: 18px;
+    text-align: left;
+    font-size: 22px;
+  }
+  .tf-table th {
+    background: #34495e;
+    color: white;
+    font-size: 22px;
+  }
+  .tf-table td:last-child {
+    text-align: center;
+    width: 180px;
+  }
+  .check-btn, .cross-btn {
+    font-size: 28px;
+    padding: 8px 16px;
+    margin: 0 4px;
+    border: 2px solid #bdc3c7;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .check-btn:hover { background: #d5f5e3; border-color: #27ae60; }
+  .cross-btn:hover { background: #fadbd8; border-color: #e74c3c; }
+  .check-btn.selected { background: #27ae60; color: white; border-color: #27ae60; }
+  .cross-btn.selected { background: #e74c3c; color: white; border-color: #e74c3c; }
+
+  .correct { background: #d5f5e3 !important; }
+  .wrong { background: #fadbd8 !important; }
+
+  /* Task 2 */
+  .fragment-box {
+    background: #f8f9fa;
+    border-left: 6px solid #3498db;
+    padding: 25px;
+    border-radius: 10px;
+    font-size: 26px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
+  .heading-options {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .heading-opt {
+    background: white;
+    border: 3px solid #3498db;
+    padding: 18px 30px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  .heading-opt:hover { background: #ebf5fb; }
+  .heading-opt.selected { background: #3498db; color: white; }
+
+  /* Task 3 */
+  .statement-box {
+    background: #fff3cd;
+    border: 3px solid #ffc107;
+    padding: 30px;
+    border-radius: 12px;
+    font-size: 26px;
+    text-align: center;
+    margin: 30px 0;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tfn-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .tfn-btn {
+    padding: 18px 35px;
+    font-size: 22px;
+    border: 3px solid #3498db;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  .tfn-btn:hover { background: #ebf5fb; }
+  .tfn-btn.selected { background: #3498db; color: white; }
+
+  /* Task 4 */
+  .headings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .headings-table th, .headings-table td {
+    border: 2px solid #bdc3c7;
+    padding: 20px;
+    font-size: 22px;
+  }
+  .headings-table th {
+    background: #8e44ad;
+    color: white;
+  }
+  .heading-select {
+    padding: 10px;
+    font-size: 20px;
+    width: 100%;
+    border: 2px solid #bdc3c7;
+    border-radius: 8px;
+  }
+
+  /* Task 5 */
+  .match-area {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin: 30px 0;
+  }
+  .match-col {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .match-item {
+    background: white;
+    border: 3px solid #9b59b6;
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .match-item:hover { background: #f4ecf7; }
+  .match-item.selected { background: #9b59b6; color: white; }
+  .match-item.matched { background: #d5f5e3; border-color: #27ae60; }
+  .match-item.wrong { background: #fadbd8; border-color: #e74c3c; }
+  #match-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* === ИЗМЕНЕНИЕ: Task 6 - увеличен шрифт для видимости с задней парты === */
+  .word-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 25px;
+    background: #ecf0f1;
+    border-radius: 10px;
+  }
+  .word-chip {
+    background: white;
+    border: 3px solid #e67e22;
+    padding: 14px 24px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 26px; /* Увеличено с 18px до 26px */
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  .word-chip:hover { background: #fef5e7; }
+  .word-chip.selected { background: #e67e22; color: white; }
+  .word-chip.used { opacity: 0.3; pointer-events: none; }
+  .crime-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .crime-table th, .crime-table td {
+    border: 3px solid #bdc3c7;
+    padding: 22px 15px;
+    text-align: center;
+    font-size: 26px; /* Увеличено с 20px до 26px */
+    font-weight: bold;
+    min-height: 80px;
+  }
+  .crime-table th {
+    background: #e67e22;
+    color: white;
+    font-size: 28px; /* Заголовки ещё крупнее */
+  }
+  .crime-table td {
+    cursor: pointer;
+    background: white;
+    min-height: 80px;
+  }
+  .crime-table td:hover { background: #fef5e7; }
+  .crime-table td.row-correct { background: #d5f5e3 !important; }
+  .crime-table td.row-wrong { background: #fadbd8 !important; }
+
+  /* Task 7 */
+  .sentence-box {
+    background: #e8f8f5;
+    border: 3px solid #16a085;
+    padding: 30px;
+    border-radius: 12px;
+    font-size: 26px;
+    text-align: center;
+    margin: 30px 0;
+    line-height: 1.8;
+  }
+  .word-choice {
+    display: inline-block;
+    padding: 8px 20px;
+    margin: 0 8px;
+    background: white;
+    border: 3px solid #16a085;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: bold;
+  }
+  .word-choice:hover { background: #d1f2eb; }
+  .word-choice.selected { background: #16a085; color: white; }
+  
+  .word-choice.correct {
+    background: #a9dfbf !important;
+    color: #00008B !important;
+    border-color: #27ae60 !important;
+  }
+  .word-choice.wrong {
+    background: #e74c3c !important;
+    color: #fff !important;
+    border-color: #c0392b !important;
+  }
+
+  .progress {
+    text-align: center;
+    font-size: 22px;
+    color: #7f8c8d;
+    margin: 15px 0;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- MAIN MENU -->
+  <div id="menu" class="screen active">
+    <h1>Module 3: Responsibility</h1>
+    <h2>Have you been the victim of a crime?</h2>
+    <div class="menu">
+      <div class="tile" onclick="showScreen('task1')">
+        <div class="num">1</div>
+        <div>AR-Guide</div>
+      </div>
+      <div class="tile" onclick="showScreen('task2')">
+        <div class="num">2</div>
+        <div>Reading!</div>
+      </div>
+      <div class="tile" onclick="showScreen('task3')">
+        <div class="num">3</div>
+        <div>True / False</div>
+      </div>
+      <div class="tile" onclick="showScreen('task4')">
+        <div class="num">4</div>
+        <div>Headings</div>
+      </div>
+      <div class="tile" onclick="showScreen('task5')">
+        <div class="num">5</div>
+        <div>Vocabulary Matching</div>
+      </div>
+      <div class="tile" onclick="showScreen('task6')">
+        <div class="num">6</div>
+        <div>Crime and Law Table!</div>
+      </div>
+      <div class="tile" onclick="showScreen('task7')">
+        <div class="num">7</div>
+        <div>Right Choice</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASK 1: AR-Guide -->
+  <div id="task1" class="screen">
+    <h1>Task 1. AR-Guide</h1>
+    <p style="text-align:center; font-size:22px; margin-bottom:20px; color:#555;">Read the statements. Keep them in mind and check your answers at the end!</p>
+    <table class="tf-table" id="t1-table">
+      <thead>
+        <tr><th style="width:70%">Statement</th><th>Your answer</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="controls">
+      <button class="btn check" onclick="checkTask1()">Check</button>
+      <button class="btn back" onclick="showScreen('menu')">Back</button>
+    </div>
+  </div>
+
+  <!-- TASK 2: Reading -->
+  <div id="task2" class="screen">
+    <h1>Task 2. Reading!</h1>
+    <div class="progress" id="t2-progress"></div>
+    <div class="fragment-box" id="t2-fragment"></div>
+    <div class="heading-options" id="t2-options"></div>
+    <div class="controls">
+      <button class="btn check" onclick="checkTask2()">Check</button>
+      <button class="btn next" onclick="nextTask2()">Next</button>
+      <button class="btn back" onclick="showScreen('menu')">Back</button>
+    </div>
+  </div>
+
+  <!-- TASK 3: True/False -->
+  <div id="task3" class="screen">
+    <h1>Task 3. True / False / Not Stated</h1>
+    <div class="progress" id="t3-progress"></div>
+    <div class="statement-box" id="t3-statement"></div>
+    <div class="tfn-buttons">
+      <button class="tfn-btn" onclick="selectT3('TRUE')">TRUE</button>
+      <button class="tfn-btn" onclick="selectT3('FALSE')">FALSE</button>
+      <button class="tfn-btn" onclick="selectT3('NOT STATED')">NOT STATED</button>
+    </div>
+    <div class="controls">
+      <button class="btn check" onclick="checkTask3()">Check</button>
+      <button class="btn next" onclick="nextTask3()">Next</button>
+      <button class="btn back" onclick="showScreen('menu')">Back</button>
+    </div>
+  </div>
+
+  <!-- TASK 4: Headings -->
+  <div id="task4" class="screen">
+    <h1>Task 4. Headings</h1>
+    <p style="text-align:center; font-size:22px; margin-bottom:20px; color:#555;">Match each text with the best heading. One heading is extra.</p>
+    <table class="headings-table">
+      <thead>
+        <tr><th>Text</th><th>Choose heading</th></tr>
+      </thead>
+      <tbody id="t4-body"></tbody>
+    </table>
+    <div class="controls">
+      <button class="btn back" onclick="showScreen('menu')">Back</button>
+    </div>
+  </div>
+
+  <!-- TASK 5: Vocabulary matching -->
+  <div id="task5" class="screen">
+    <h1>Task 5. Vocabulary Matching</h1>
+    <p style="text-align:center; font-size:22px; margin-bottom:20px; color:#555;">Click a word on the left, then click its meaning on the right.</p>
+    <div class="match-area" id="match-area">
+      <div class="match-col" id="match-left"></div>
+      <svg id="match-svg"></svg>
+      <div class="match-col" id="match-right"></div>
+    </div>
+    <div class="controls">
+      <button class="btn check" onclick="checkTask5()">Check</button>
+      <button class="btn back" onclick="showScreen('menu')">Back</button>
+    </div>
+  </div>
+
+  <!-- TASK 6: Crime and Law Table -->
+  <div id="task6" class="screen">
+    <h1>Task 6. Crime and Law Table!</h1>
+    <p style="text-align:center; font-size:22px; margin-bottom:10px; color:#555;">Click a word, then click a cell to place it. Complete each row correctly.</p>
+    <div class="word-bank" id="t6-bank"></div>
+    <table class="crime-table" id="t6-table">
+      <thead>
+        <tr><th>CRIME</th><th>CRIMINAL</th><th>VERB</th></tr>
+      </thead>
+      <tbody id="t6-body"></tbody>
+    </table>
+    <div class="controls">
+      <button class="btn back" onclick="showScreen('menu')">Back</button>
+    </div>
+  </div>
+
+  <!-- TASK 7: Right choice -->
+  <div id="task7" class="screen">
+    <h1>Task 7. Right Choice</h1>
+    <div class="progress" id="t7-progress"></div>
+    <div class="sentence-box" id="t7-sentence"></div>
+    <div class="controls">
+      <button class="btn check" onclick="checkTask7()">Check</button>
+      <button class="btn next" onclick="nextTask7()">Next</button>
+      <button class="btn back" onclick="showScreen('menu')">Back</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============ NAVIGATION ============ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'task2') initTask2();
+  if (id === 'task3') initTask3();
+  if (id === 'task5') initTask5();
+  if (id === 'task6') initTask6();
+  if (id === 'task7') initTask7();
+}
+
+/* ============ TASK 1: AR-Guide ============ */
+const t1Data = [
+  { text: "Debbie clearly remembered buying the lottery ticket.", answer: "cross" },
+  { text: "Steve's family caught the burglars themselves.", answer: "cross" },
+  { text: "David was mugged on his way home from school.", answer: "check" },
+  { text: "The mugger who attacked David was a stranger the police had never seen before.", answer: "cross" },
+  { text: "Anna's wallet was stolen while she was distracted by a fake accident (bird mess).", answer: "check" },
+  { text: "The police have already found all the culprits mentioned in the four stories.", answer: "cross" }
+];
+const t1User = {};
+
+function renderTask1() {
+  const tbody = document.querySelector('#t1-table tbody');
+  tbody.innerHTML = '';
+  t1Data.forEach((item, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i+1}. ${item.text}</td>
+      <td>
+        <button class="check-btn" onclick="setT1(${i}, 'check')">✓</button>
+        <button class="cross-btn" onclick="setT1(${i}, 'cross')">✗</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+function setT1(i, val) {
+  t1User[i] = val;
+  const row = document.querySelectorAll('#t1-table tbody tr')[i];
+  row.querySelector('.check-btn').classList.toggle('selected', val === 'check');
+  row.querySelector('.cross-btn').classList.toggle('selected', val === 'cross');
+}
+function checkTask1() {
+  t1Data.forEach((item, i) => {
+    const row = document.querySelectorAll('#t1-table tbody tr')[i];
+    const userAns = t1User[i];
+    row.classList.remove('correct', 'wrong');
+    if (userAns === item.answer) row.classList.add('correct');
+    else if (userAns) row.classList.add('wrong');
+  });
+}
+renderTask1();
+
+/* ============ TASK 2: Reading ============ */
+const t2Data = [
+  { text: '"Have you been the victim of a crime? Perhaps you\'ve been taken for a ride by a con artist or been the victim of some other petty crime? Or maybe the crime was something more serious? Let\'s see what our readers say."',
+    options: ["A) Introduction to the topic", "B) A serious crime report"], correct: 0 },
+  { text: '"Tue Oct 26 16:34:06 — Debbie. A couple of months ago, I received a letter out of the blue saying I\'d won a prize in an international lottery. I couldn\'t even remember buying a ticket! Anyway, I contacted the people the letter was from, who asked me to send them a \'fee\' to process my winnings."',
+    options: ["A) A lucky win", "B) The setup of a scam"], correct: 1 },
+  { text: '"Like an idiot, I fell for it and sent them the money. I realised it was a scam when I didn\'t hear from them again. So basically, the \'prizes\' don\'t exist. These terrible fraudsters are just trying to trick gullible people (like me!) into sending them money. The police say they\'ve been investigating this crime for a while now, but they haven\'t found the culprits yet."',
+    options: ["A) The sad realization and ongoing investigation", "B) A successful police operation"], correct: 0 },
+  { text: '"Mon Nov 1 09:03:12 — Steve. Burglars recently broke into our house while we were sleeping upstairs! My sister and I heard a noise, so we woke up our dad, who called the police. By the time the police arrived, though, the burglars had gone."',
+    options: ["A) A nighttime break-in", "B) A noisy neighborhood party"], correct: 0 },
+  { text: '"While we were checking what they had taken, a neighbour reported a burglary at their house too. The police caught them red-handed! My dad\'s got to give evidence in court in a few weeks!"',
+    options: ["A) A fortunate coincidence and arrest", "B) A failed police investigation"], correct: 0 },
+  { text: '"Thur Oct 28 11:14:32 — David. I used to think crime was just something that happened to other people until I got mugged on the way home from school last year. The attacker just came out of nowhere, threatened me with a knife, grabbed my mobile phone and ran away."',
+    options: ["A) A sudden street robbery", "B) A planned school event"], correct: 0 },
+  { text: '"Fortunately, I was able to identify the mugger from a photo at the police station. He was a well-known criminal in the area, so the police knew where to find him. Anyway, he confessed to the crime, the police arrested him, and he received a two-year prison sentence!"',
+    options: ["A) Identification and justice", "B) A mysterious disappearance"], correct: 0 },
+  { text: '"Sat Oct 30 20:11:54 — Anna. I was out shopping in the town centre when suddenly, something that looked like bird mess landed on my shoulder! Immediately, a so-called passer by appeared with a cloth to wipe it off."',
+    options: ["A) A strange but harmless accident", "B) A classic distraction trick"], correct: 1 },
+  { text: '"It wasn\'t until I reached for my wallet to buy something that I realised it had been stolen. When I reported the crime to the police, I was told that this has been happening a lot lately."',
+    options: ["A) A delayed realization of theft", "B) A successful shopping trip"], correct: 0 },
+  { text: '"These people are professional pickpockets, who use any means they can to distract their victims!"',
+    options: ["A) A warning about professional tactics", "B) Advice on how to clean clothes"], correct: 0 }
+];
+let t2Index = 0;
+let t2Selected = null;
+let t2Checked = {};
+
+function initTask2() {
+  t2Index = 0;
+  t2Selected = null;
+  t2Checked = {};
+  renderTask2();
+}
+function renderTask2() {
+  document.getElementById('t2-progress').textContent = `Fragment ${t2Index+1} of ${t2Data.length}`;
+  document.getElementById('t2-fragment').textContent = t2Data[t2Index].text;
+  const opts = document.getElementById('t2-options');
+  opts.innerHTML = '';
+  t2Data[t2Index].options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'heading-opt';
+    div.textContent = opt;
+    div.onclick = () => selectT2(i);
+    opts.appendChild(div);
+  });
+  t2Selected = null;
+}
+function selectT2(i) {
+  t2Selected = i;
+  document.querySelectorAll('#t2-options .heading-opt').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+}
+function checkTask2() {
+  if (t2Selected === null) return;
+  const opts = document.querySelectorAll('#t2-options .heading-opt');
+  opts.forEach((el, idx) => {
+    el.classList.remove('correct', 'wrong');
+    if (idx === t2Selected) {
+      if (idx === t2Data[t2Index].correct) el.classList.add('correct');
+      else el.classList.add('wrong');
+    }
+    if (idx === t2Data[t2Index].correct && t2Selected !== idx) {
+      el.classList.add('correct');
+    }
+  });
+  t2Checked[t2Index] = t2Selected;
+}
+function nextTask2() {
+  if (t2Index < t2Data.length - 1) {
+    t2Index++;
+    renderTask2();
+  } else {
+    alert('All fragments completed!');
+    showScreen('menu');
+  }
+}
+
+/* ============ TASK 3: True/False ============ */
+const t3Data = [
+  { text: "Debbie clearly remembered purchasing the lottery ticket.", answer: "FALSE" },
+  { text: "Steve's father is required to testify in court soon.", answer: "TRUE" },
+  { text: "The police had never seen David's mugger before the arrest.", answer: "FALSE" },
+  { text: "Anna lost over £500 in the incident.", answer: "NOT STATED" },
+  { text: "The distraction trick used on Anna is a known, recurring method.", answer: "TRUE" }
+];
+let t3Index = 0;
+let t3Selected = null;
+
+function initTask3() {
+  t3Index = 0;
+  t3Selected = null;
+  renderTask3();
+}
+function renderTask3() {
+  document.getElementById('t3-progress').textContent = `Statement ${t3Index+1} of ${t3Data.length}`;
+  document.getElementById('t3-statement').textContent = t3Data[t3Index].text;
+  document.querySelectorAll('.tfn-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('t3-statement').classList.remove('correct', 'wrong');
+  t3Selected = null;
+}
+function selectT3(val) {
+  t3Selected = val;
+  document.querySelectorAll('.tfn-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent === val);
+  });
+}
+function checkTask3() {
+  if (t3Selected === null) return;
+  const box = document.getElementById('t3-statement');
+  box.classList.remove('correct', 'wrong');
+  if (t3Selected === t3Data[t3Index].answer) box.classList.add('correct');
+  else box.classList.add('wrong');
+}
+function nextTask3() {
+  if (t3Index < t3Data.length - 1) {
+    t3Index++;
+    renderTask3();
+  } else {
+    alert('All statements completed!');
+    showScreen('menu');
+  }
+}
+
+/* ============ TASK 4: Headings ============ */
+const t4Data = [
+  { name: "Text A (Debbie)", correct: "FRAUD VICTIM" },
+  { name: "Text B (Steve)", correct: "CAUGHT IN THE ACT" },
+  { name: "Text C (David)", correct: "NASTY ATTACK" },
+  { name: "Text D (Anna)", correct: "COMMON TRICK" }
+];
+const t4Headings = ["NASTY ATTACK", "UNLUCKY MUGGERS", "FRAUD VICTIM", "CAUGHT IN THE ACT", "COMMON TRICK"];
+
+function renderTask4() {
+  const tbody = document.getElementById('t4-body');
+  tbody.innerHTML = '';
+  t4Data.forEach((item, i) => {
+    const tr = document.createElement('tr');
+    let opts = '<option value="">-- Select --</option>';
+    t4Headings.forEach(h => opts += `<option value="${h}">${h}</option>`);
+    tr.innerHTML = `
+      <td><strong>${item.name}</strong></td>
+      <td><select class="heading-select" onchange="checkT4Row(${i}, this)">${opts}</select></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function checkT4Row(i, sel) {
+  const tr = sel.closest('tr');
+  tr.classList.remove('correct', 'wrong');
+  if (sel.value === '') return;
+  if (sel.value === t4Data[i].correct) tr.classList.add('correct');
+  else tr.classList.add('wrong');
+}
+renderTask4();
+
+/* ============ TASK 5: Vocabulary Matching ============ */
+const t5Pairs = [
+  { word: "petty", meaning: "small / minor" },
+  { word: "out of the blue", meaning: "unexpectedly" },
+  { word: "fell for it", meaning: "was deceived" },
+  { word: "gullible", meaning: "trusting / easily tricked" },
+  { word: "broke into", meaning: "got into by force" },
+  { word: "shaken up", meaning: "in shock" },
+  { word: "wipe it off", meaning: "remove it with a cloth" },
+  { word: "lately", meaning: "recently" },
+  { word: "distract", meaning: "take someone's attention away" },
+  { word: "red-handed", meaning: "in the act of committing a crime" }
+];
+let t5Matches = {}; 
+let t5SelectedWord = null;
+
+function initTask5() {
+  t5Matches = {};
+  t5SelectedWord = null;
+  const left = document.getElementById('match-left');
+  const right = document.getElementById('match-right');
+  left.innerHTML = '';
+  right.innerHTML = '';
+  const shuffledMeanings = [...t5Pairs].sort(() => Math.random() - 0.5);
+  t5Pairs.forEach((p, i) => {
+    const w = document.createElement('div');
+    w.className = 'match-item';
+    w.textContent = p.word;
+    w.dataset.wordIdx = i;
+    w.onclick = () => selectWord(i);
+    left.appendChild(w);
+  });
+  shuffledMeanings.forEach((p, i) => {
+    const origIdx = t5Pairs.findIndex(x => x.meaning === p.meaning);
+    const m = document.createElement('div');
+    m.className = 'match-item';
+    m.textContent = p.meaning;
+    m.dataset.meaningIdx = origIdx;
+    m.onclick = () => selectMeaning(origIdx);
+    right.appendChild(m);
+  });
+  drawLines();
+}
+function selectWord(i) {
+  t5SelectedWord = i;
+  document.querySelectorAll('#match-left .match-item').forEach(el => {
+    if (!el.classList.contains('matched'))
+      el.classList.toggle('selected', parseInt(el.dataset.wordIdx) === i);
+  });
+}
+function selectMeaning(mIdx) {
+  if (t5SelectedWord === null) return;
+  Object.keys(t5Matches).forEach(k => {
+    if (t5Matches[k] === mIdx) delete t5Matches[k];
+  });
+  t5Matches[mIdx] = t5SelectedWord;
+  t5SelectedWord = null;
+  document.querySelectorAll('#match-left .match-item').forEach(el => el.classList.remove('selected'));
+  drawLines();
+}
+function drawLines() {
+  const svg = document.getElementById('match-svg');
+  svg.innerHTML = '';
+  const area = document.getElementById('match-area');
+  const areaRect = area.getBoundingClientRect();
+  Object.keys(t5Matches).forEach(mIdxStr => {
+    const mIdx = parseInt(mIdxStr);
+    const wIdx = t5Matches[mIdx];
+    const wEl = document.querySelector(`#match-left .match-item[data-word-idx="${wIdx}"]`);
+    const mEl = document.querySelector(`#match-right .match-item[data-meaning-idx="${mIdx}"]`);
+    if (!wEl || !mEl) return;
+    const wRect = wEl.getBoundingClientRect();
+    const mRect = mEl.getBoundingClientRect();
+    const x1 = wRect.right - areaRect.left;
+    const y1 = wRect.top + wRect.height/2 - areaRect.top;
+    const x2 = mRect.left - areaRect.left;
+    const y2 = mRect.top + mRect.height/2 - areaRect.top;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('stroke', '#9b59b6');
+    line.setAttribute('stroke-width', '3');
+    line.dataset.wIdx = wIdx;
+    line.dataset.mIdx = mIdx;
+    svg.appendChild(line);
+  });
+}
+function checkTask5() {
+  document.querySelectorAll('#match-left .match-item, #match-right .match-item').forEach(el => {
+    el.classList.remove('matched', 'wrong');
+  });
+  document.querySelectorAll('#match-svg line').forEach(line => {
+    const wIdx = parseInt(line.dataset.wIdx);
+    const mIdx = parseInt(line.dataset.mIdx);
+    const wEl = document.querySelector(`#match-left .match-item[data-word-idx="${wIdx}"]`);
+    const mEl = document.querySelector(`#match-right .match-item[data-meaning-idx="${mIdx}"]`);
+    if (wIdx === mIdx) {
+      line.setAttribute('stroke', '#27ae60');
+      line.setAttribute('stroke-width', '5');
+      if (wEl) wEl.classList.add('matched');
+      if (mEl) mEl.classList.add('matched');
+    } else {
+      line.setAttribute('stroke', '#e74c3c');
+      line.setAttribute('stroke-width', '5');
+      if (wEl) wEl.classList.add('wrong');
+      if (mEl) mEl.classList.add('wrong');
+    }
+  });
+}
+window.addEventListener('resize', drawLines);
+
+/* ============ TASK 6: Crime and Law Table ============ */
+const t6Rows = [
+  { crime: "bank robbery", criminal: "bank robber", verb: "rob (a bank)" },
+  { crime: "burglary", criminal: "burglar", verb: "burgle (sb's house)" },
+  { crime: "mugging", criminal: "mugger", verb: "mug (somebody)" },
+  { crime: "shoplifting", criminal: "shoplifter", verb: "shoplift" },
+  { crime: "theft", criminal: "thief", verb: "steal (a car)" },
+  { crime: "vandalism", criminal: "vandal", verb: "vandalise (something)" },
+  { crime: "pickpocketing", criminal: "pickpocket", verb: "steal (sb's purse)" },
+  { crime: "kidnapping", criminal: "kidnapper", verb: "kidnap (somebody)" }
+];
+const t6AllWords = [];
+t6Rows.forEach(r => {
+  t6AllWords.push({ text: r.crime, type: "crime" });
+  t6AllWords.push({ text: r.criminal, type: "criminal" });
+  t6AllWords.push({ text: r.verb, type: "verb" });
+});
+let t6SelectedWord = null;
+let t6Grid = Array(8).fill(null).map(() => ({ crime: null, criminal: null, verb: null }));
+
+function initTask6() {
+  t6SelectedWord = null;
+  t6Grid = Array(8).fill(null).map(() => ({ crime: null, criminal: null, verb: null }));
+  const bank = document.getElementById('t6-bank');
+  bank.innerHTML = '';
+  const shuffled = [...t6AllWords].sort(() => Math.random() - 0.5);
+  shuffled.forEach((w, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'word-chip';
+    chip.textContent = w.text;
+    chip.dataset.text = w.text;
+    chip.dataset.type = w.type;
+    chip.onclick = () => selectT6Word(chip);
+    bank.appendChild(chip);
+  });
+  renderT6Table();
+}
+function selectT6Word(chip) {
+  document.querySelectorAll('.word-chip').forEach(c => c.classList.remove('selected'));
+  chip.classList.add('selected');
+  t6SelectedWord = { text: chip.dataset.text, type: chip.dataset.type, el: chip };
+}
+function renderT6Table() {
+  const tbody = document.getElementById('t6-body');
+  tbody.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const tr = document.createElement('tr');
+    ['crime', 'criminal', 'verb'].forEach(col => {
+      const td = document.createElement('td');
+      td.textContent = t6Grid[i][col] || '';
+      td.dataset.row = i;
+      td.dataset.col = col;
+      td.onclick = () => placeT6Word(i, col, td);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+}
+function placeT6Word(row, col, td) {
+  if (!t6SelectedWord) return;
+  if (t6SelectedWord.type !== col) {
+    td.style.background = '#fadbd8';
+    setTimeout(() => td.style.background = '', 500);
+    return;
+  }
+  if (t6Grid[row][col]) {
+    const oldText = t6Grid[row][col];
+    const oldChip = [...document.querySelectorAll('.word-chip')].find(c => c.dataset.text === oldText);
+    if (oldChip) oldChip.classList.remove('used');
+  }
+  t6Grid[row][col] = t6SelectedWord.text;
+  t6SelectedWord.el.classList.add('used');
+  t6SelectedWord.el.classList.remove('selected');
+  t6SelectedWord = null;
+  td.textContent = t6Grid[row][col];
+  checkT6Row(row);
+}
+
+function checkT6Row(row) {
+  const g = t6Grid[row];
+  if (!g.crime || !g.criminal || !g.verb) return;
+  const tr = document.querySelectorAll('#t6-body tr')[row];
+  const cells = tr.querySelectorAll('td');
+  cells.forEach(c => c.classList.remove('row-correct', 'row-wrong'));
+
+  const isCorrectTriple = t6Rows.some(r => 
+    r.crime === g.crime && r.criminal === g.criminal && r.verb === g.verb
+  );
+
+  if (isCorrectTriple) {
+    cells.forEach(c => c.classList.add('row-correct'));
+  } else {
+    cells.forEach(c => c.classList.add('row-wrong'));
+  }
+}
+
+/* ============ TASK 7: Right Choice ============ */
+const t7Data = [
+  { sentence: "Adam has got to go to court for a driving [offence/crime].", options: ["offence", "crime"], correct: 0 },
+  { sentence: "The burglars were arrested and [taken/driven] to court.", options: ["taken", "driven"], correct: 0 },
+  { sentence: "It's [unlawful/illegal] to trespass on private property.", options: ["unlawful", "illegal"], correct: 1 },
+  { sentence: "The judge [announced/found] him guilty of murder.", options: ["announced", "found"], correct: 1 },
+  { sentence: "The murderer received a life [sentence/imprisonment].", options: ["sentence", "imprisonment"], correct: 0 },
+  { sentence: "There were no [witnesses/suspects] to the accident.", options: ["witnesses", "suspects"], correct: 0 },
+  { sentence: "The man [confessed/denied] to the burglary.", options: ["confessed", "denied"], correct: 0 },
+  { sentence: "The police have [arrested/released] him for questioning.", options: ["arrested", "released"], correct: 0 },
+  { sentence: "He had to pay a large [fine/fee] for speeding.", options: ["fine", "fee"], correct: 0 },
+  { sentence: "Your neighbour has just been [convicted/sentenced] of fraud.", options: ["convicted", "sentenced"], correct: 0 }
+];
+let t7Index = 0;
+let t7Selected = null;
+
+function initTask7() {
+  t7Index = 0;
+  t7Selected = null;
+  renderTask7();
+}
+function renderTask7() {
+  document.getElementById('t7-progress').textContent = `Sentence ${t7Index+1} of ${t7Data.length}`;
+  const item = t7Data[t7Index];
+  const parts = item.sentence.split('[');
+  const before = parts[0];
+  const rest = parts[1];
+  const after = rest.split(']')[1];
+  const box = document.getElementById('t7-sentence');
+  box.innerHTML = `${before}<span class="word-choice" onclick="selectT7(0)">${item.options[0]}</span> / <span class="word-choice" onclick="selectT7(1)">${item.options[1]}</span>${after}`;
+  t7Selected = null;
+}
+function selectT7(i) {
+  t7Selected = i;
+  document.querySelectorAll('#t7-sentence .word-choice').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+}
+function checkTask7() {
+  if (t7Selected === null) return;
+  const choices = document.querySelectorAll('#t7-sentence .word-choice');
+  choices.forEach((el, idx) => {
+    el.classList.remove('correct', 'wrong');
+    if (idx === t7Selected) {
+      if (idx === t7Data[t7Index].correct) el.classList.add('correct');
+      else el.classList.add('wrong');
+    }
+    if (idx === t7Data[t7Index].correct && t7Selected !== idx) {
+      el.classList.add('correct');
+    }
+  });
+}
+function nextTask7() {
+  if (t7Index < t7Data.length - 1) {
+    t7Index++;
+    renderTask7();
+  } else {
+    alert('All sentences completed!');
+    showScreen('menu');
+  }
+}
+</script>
+</body>
+</html>
